@@ -1,0 +1,85 @@
+import os
+import platform
+import subprocess
+import tkinter as tk
+from tkinter import filedialog, messagebox, StringVar
+import customtkinter as ctk
+
+# username: admin
+# password: password
+
+# Set the initial theme to dark mode
+current_mode = "light"
+ctk.set_appearance_mode(current_mode)  # Modes: "System" (default), "Dark", "Light"
+ctk.set_default_color_theme("green")  # Themes: "blue" (default), "green", "dark-blue"
+
+class App:
+    def __init__(self):
+        self.root = ctk.CTk()
+        self.root.withdraw()  # Hide the main window initially
+        self.create_welcome_window()
+
+    def create_welcome_window(self):
+        self.welcome_window = tk.Tk()
+        self.welcome_window.title("Welcome To The Waka-ama Tracker")
+
+        # Welcome label
+        welcome_label = tk.Label(self.welcome_window, text="Welcome To The Waka-ama Tracker", font=("Helvetica", 16))
+        welcome_label.pack(pady=20)
+
+        # Login button
+        login_button = ctk.CTkButton(self.welcome_window, text="Login", command=self.open_login_window)
+        login_button.pack(pady=10)
+
+        self.welcome_window.mainloop()
+
+    def open_login_window(self):
+        self.welcome_window.destroy()
+        self.create_login_window()
+
+    def create_login_window(self):
+        global username_var, password_var
+
+        self.login_window = ctk.CTkToplevel(self.root)
+        self.login_window.title("Login")
+
+        username_label = ctk.CTkLabel(self.login_window, text="Username:")
+        username_label.grid(row=0, column=0, padx=10, pady=10)
+
+        username_var = StringVar()
+        username_entry = ctk.CTkEntry(self.login_window, textvariable=username_var)
+        username_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        password_label = ctk.CTkLabel(self.login_window, text="Password:")
+        password_label.grid(row=1, column=0, padx=10, pady=10)
+
+        password_var = StringVar()
+        password_entry = ctk.CTkEntry(self.login_window, textvariable=password_var, show="*")
+        password_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        login_button = ctk.CTkButton(self.login_window, text="Enter", command=self.check_login)
+        login_button.grid(row=2, column=0, columnspan=2, pady=10)
+
+        # Button to toggle between dark mode and light mode (Login Window)
+        toggle_mode_button_login = ctk.CTkButton(self.login_window, text="Toggle Dark/Light Mode", command=toggle_mode)
+        toggle_mode_button_login.grid(row=3, column=0, columnspan=2, pady=10)
+
+    def check_login(self):
+        username = username_var.get().strip()
+        password = password_var.get().strip()
+
+        errors = []
+        if len(username) > 10:
+            errors.append("username exceeds the limit (maximum 10 characters)")
+        if len(password) > 20:
+            errors.append("password exceeds the limit (maximum 20 characters)")
+
+        if errors:
+            messagebox.showerror("Error", "\n".join(errors))
+            return
+
+        if username == "admin" and password == "password":
+            self.login_window.destroy()
+            self.create_main_window()  # Show the main window
+        else:
+            messagebox.showerror("Error", "Invalid username or password")
