@@ -77,7 +77,7 @@ class App:
         if errors:
             messagebox.showerror("Error", "\n".join(errors))
             return
-
+        
         if username == "admin" and password == "password":
             self.login_window.destroy()
             self.create_main_window()  # Show the main window
@@ -204,6 +204,9 @@ class App:
                     columns = line.split(',')
                     if len(columns) > 5:
                         club_name = columns[5].strip()
+                        if not club_name:
+                            print(f"Line {i+2}: No club name found. Line content: {line.strip()}")
+                            continue
                         if club_name.upper() in ["DQ", "DNS"]:
                             continue  # Skip DQ or DNS entries
                         points = self.assign_points(i + 1)
@@ -211,6 +214,8 @@ class App:
                             club_points[club_name] += points
                         else:
                             club_points[club_name] = points
+                    else:
+                        print(f"Line {i+2}: Insufficient columns. Line content: {line.strip()}")
             except Exception as e:
                 messagebox.showerror("Error", f"Error processing file {filename}: {e}")
                 return
@@ -261,3 +266,4 @@ def toggle_mode():
 
 # Run the application
 app = App()
+
